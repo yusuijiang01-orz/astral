@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - v2-a-visual-foundation
   workflow_dispatch:
 
 permissions:
@@ -19,23 +20,57 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout main
         uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main-src
+
+      - name: Checkout V2 preview branch
+        uses: actions/checkout@v4
+        with:
+          ref: v2-a-visual-foundation
+          path: v2-src
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
 
-      - name: Install dependencies
+      - name: Install main dependencies
+        working-directory: main-src
         run: npm ci
 
-      - name: Run tests
+      - name: Test main
+        working-directory: main-src
         run: npm test
 
-      - name: Build for GitHub Pages
+      - name: Build main
+        working-directory: main-src
         run: npm run build
+
+      - name: Install V2 dependencies
+        working-directory: v2-src
+        run: npm ci
+
+      - name: Test V2
+        working-directory: v2-src
+        run: npm test
+
+      - name: Build V2 preview
+        working-directory: v2-src
+        run: npm run build
+
+      - name: Assemble Pages artifact
+        run: |
+          rm -rf pages-dist
+          mkdir -p pages-dist/v2
+          cp -a main-src/dist/. pages-dist/
+          cp -a v2-src/dist/. pages-dist/v2/
+          test -f pages-dist/index.html
+          test -f pages-dist/v2/index.html
+          echo 'Pages artifact entry points:'
+          find pages-dist -maxdepth 2 -name 'index.html' -print
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
@@ -43,7 +78,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: ./pages-dist
 
   deploy:
     environment:
