@@ -20,8 +20,8 @@ function assetStatus(report, debug) {
   const badge = document.createElement("div");
   badge.id = "asset-status";
   badge.setAttribute("role", "status");
-  badge.textContent = report.records.some((r) => r.status === "RUNTIME_BLOCKED")
-    ? "V2-A · RUNTIME_BLOCKED · NOT COMPLETE"
+  badge.textContent = report.records.some((r) => r.status === "ENVIRONMENT_LIMITATION")
+    ? "ENVIRONMENT_LIMITATION · CHECK ACTIONS RENDERER QA"
     : debug
       ? "ASSET FALLBACK · PROTOTYPE · V2-A NOT COMPLETE"
       : report.ready
@@ -37,7 +37,7 @@ function foundationPanel(report) {
   const panel = document.createElement("section");
   panel.className = "panel foundation-panel";
   const runtimeBlocked = report.records.some(
-    (r) => r.status === "RUNTIME_BLOCKED",
+    (r) => r.status === "ENVIRONMENT_LIMITATION",
   );
   const title = document.createElement("h2");
   title.textContent = runtimeBlocked
@@ -47,7 +47,7 @@ function foundationPanel(report) {
       : "V2-A 正式资产待接入";
   const text = document.createElement("p");
   text.textContent = runtimeBlocked
-    ? "当前浏览器无法创建 WebGL 2 上下文。请在支持并启用硬件加速的浏览器检查游戏。正式资产也尚未接入，当前阶段不能通过视觉验收。"
+    ? "当前浏览器无法创建 WebGL 2 上下文。请在支持并启用硬件加速的浏览器检查游戏。此为执行环境限制，不阻止工程阶段；图形门禁以 GitHub Actions SwiftShader 验收为准。"
     : report.ready
       ? "资产已通过结构检查。当前仅为视觉基础检查，尚未开放 V2 正式游戏，也未通过视觉验收。"
       : "正式角色、骨骼动画与环境材质尚未提供。按 V2 要求，默认模式不展示方块角色或圆锥树。";
@@ -128,6 +128,16 @@ async function boot() {
   try {
     pipeline = new RendererPipeline(canvas);
     assets = new AssetLoader(pipeline.renderer);
+    if (new URLSearchParams(location.search).get('qa') === '1') {
+      document.querySelector('#hud').hidden = true;
+      document.querySelector('#overlay').classList.remove('active');
+      const badge = document.createElement('div'); badge.id='asset-status';
+      badge.textContent='QA_ASSET · NOT PRODUCTION ART · REAL_DEVICE_NOT_VERIFIED'; document.body.append(badge);
+      const { createRendererQA } = await import('./render/RendererQA.js');
+      const qa = await createRendererQA(pipeline, assets); instances.push(...qa.instances, {dispose:()=>qa.dispose()});
+      let last=performance.now(); const frame=now=>{if(disposed)return;qa.update(Math.min(.05,(now-last)/1000));last=now;frameId=requestAnimationFrame(frame);};
+      frameId=requestAnimationFrame(frame); return;
+    }
     const report = await assets.loadManifest(ASSET_MANIFEST);
     if (disposed) return;
     const debug = debugAssetsEnabled(location.search);
@@ -176,7 +186,7 @@ async function boot() {
     const report = {
       ready: false,
       records: [
-        { key: "renderer", status: "RUNTIME_BLOCKED", reason: error.message },
+        { key: "renderer", status: "ENVIRONMENT_LIMITATION", reason: error.message },
         ...Object.entries(ASSET_MANIFEST)
           .filter(([, c]) => !c.path)
           .map(([key]) => ({

@@ -1,3 +1,5 @@
+> 当前门禁以 [V2 阶段门禁修订](docs/V2_GATES.md) 为准。下方历史 V2-A 阻塞描述已被修订替代。软件 WebGL 验收工作流运行中；正式角色是 V2-C 资产待办，不能阻止 V2-B。
+
 # 星隙行者 / Astral Rift
 
 > **本分支：V2-A Visual Foundation 草稿 / NOT COMPLETE。** 按新的 V2 需求在现有项目上受控重构。默认显示正式资产门禁，旧游戏仅在 `?debugAssets=1` 下显示且标记 ASSET FALLBACK。当前缺少正式角色/环境资产，受测浏览器无法创建 WebGL，尚未通过视觉验收。详见 [V2-A QA](docs/V2_A_QA.md)；后续阶段未开始。

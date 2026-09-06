@@ -1,0 +1,5 @@
+QA_ASSET — NOT PRODUCTION ART
+Original mathematical skinned test mesh, Idle animation, and 8x8 test textures.
+Created for this repository; dedicated to the public domain under CC0-1.0.
+Source: scripts/generate-qa-asset.py. No external or third-party content.
+This fixture cannot satisfy the V2-C Production Character Gate or final art review.

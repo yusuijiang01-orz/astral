@@ -1,3 +1,5 @@
+> HISTORICAL REPORT: old blocking gates below are superseded by [V2_GATES.md](V2_GATES.md). Disabled cloud GL is an environment limitation, not Renderer QA Failure.
+
 # V2-A Visual Foundation — NOT COMPLETE
 
 基线：`f1865d6`（包含用户加入的 GitHub Pages 部署工作流）。
