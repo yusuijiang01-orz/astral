@@ -11,3 +11,5 @@ Implemented: sculpted terrain, central elliptical courtyard, curved approach, fl
 Not complete: dedicated bark/leaf material art, detailed wall carvings, authored architectural stair set, unique sculptures, crates/barrels/braziers, better foliage LOD and instancing, environmental GLB export, collision/navigation and encounter integration. Current trees and stones require further art refinement. No production player/monster added. No claim of final asset approval or target mobile performance.
 
 Production Character Gate remains V2-C. The QA GLB never appears in this environment review.
+
+Software screenshot inspection on 9caa205: all 3 views rendered, no runtime errors; 0 Box/Cone/Plane primitive meshes. The initial images showed excessive atmospheric flattening, noisy normals and clipped crystals; fog density, normal amplitude and crystal emission were reduced in the next revision. These are composition/material refinements, not a final art approval.

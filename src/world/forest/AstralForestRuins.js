@@ -9,8 +9,8 @@ export async function createAstralForest(pipeline){
  const textures=[];const loader=new TextureLoader();const maps={};
  for(const name of ['baseColor','normal','roughness','ao']){const t=await loader.loadAsync(assetURL(`assets/forest/stone-${name}.png`,import.meta.env?.BASE_URL||'./',location.href));t.wrapS=t.wrapT=RepeatWrapping;textures.push(t);maps[name]=t;}
  const materials={};
- for(const [name,color] of Object.entries({stone:'#abb8aa',earth:'#71866b',bark:'#68695a',leaf:'#689976',lightLeaf:'#9ebc77',darkLeaf:'#396e62',crystal:'#95e6de',gold:'#b8a478'})){
-  const m=createEnvironmentMaterial({color,maps:{...maps,detailNormal:maps.normal},roughness:name==='crystal'?.28:.88,emissive:name==='crystal'?'#62d8cc':'#000000'});m.name=`Forest:${name}`;m.side=DoubleSide;if(name==='crystal'){m.emissiveIntensity=2; m.userData.astralBloom=true;}materials[name]=pipeline.trackMaterial(m);
+ for(const [name,color] of Object.entries({stone:'#abb8aa',earth:'#6f9060',bark:'#71604c',leaf:'#528e5b',lightLeaf:'#93b45f',darkLeaf:'#37664b',crystal:'#68b3cc',gold:'#b8a478'})){
+  const m=createEnvironmentMaterial({color,maps:{...maps,detailNormal:maps.normal},detailNormalScale:.08,roughness:name==='crystal'?.28:.88,emissive:name==='crystal'?'#62d8cc':'#000000'});m.name=`Forest:${name}`;m.normalScale.set(.18,.18);m.side=DoubleSide;if(name==='crystal'){m.emissiveIntensity=.55; m.metalness=.22; m.userData.astralBloom=true;}materials[name]=pipeline.trackMaterial(m);
  }
  const meshes=[];let seed=73421;const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
  function add(name,g,mat,pos=[0,0,0],scale=1){const m=new Mesh(g,materials[mat]);m.name=name;m.position.set(...pos);m.scale.setScalar(scale);m.castShadow=true;m.receiveShadow=true;root.add(m);meshes.push(m);return m;}
@@ -40,7 +40,7 @@ export async function createAstralForest(pipeline){
  for(const [x,z] of [[0,-6],[-9,1],[10,3]])for(let i=0;i<5;i++){const m=add('Astral crystal formation',rock(i,[.3,.8+rand(),.3]),'crystal',[x+(rand()-.5)*1.4,.7,z+(rand()-.5)*1.3]);m.rotation.z=(rand()-.5)*.7;markBloom(m);}
  for(let i=0;i<17;i++){const a=i/16*Math.PI;add('Distant mountain ridge',rock(i,[8,5+rand()*10,6]),'darkLeaf',[Math.cos(a)*52,2,-30-Math.sin(a)*20]);}
  const particles=new BufferGeometry(),p=[];for(let i=0;i<80;i++)p.push((rand()-.5)*44,rand()*9,(rand()-.5)*35);particles.setAttribute('position',new Float32BufferAttribute(p,3));const dust=new Points(particles,new PointsMaterial({color:'#f4e4ad',size:.065,transparent:true,opacity:.5,depthWrite:false}));root.add(dust);
- pipeline.scene.add(root);pipeline.scene.background=new Color('#b1c7ba');pipeline.scene.fog.color.copy(pipeline.scene.background);pipeline.scene.fog.density=.018;
+ pipeline.scene.add(root);pipeline.scene.background=new Color('#b1c7ba');pipeline.scene.fog.color.copy(pipeline.scene.background);pipeline.scene.fog.density=.009;
  pipeline.camera.position.set(20,15,29);pipeline.camera.lookAt(0,3,-4);pipeline.lighting.follow(new Vector3(0,0,-3));pipeline.post.bloom.strength=.28;
  const quality=p=>{undergrowth.forEach((m,i)=>m.visible=i/undergrowth.length<p.grassDensity);};pipeline.visualClients.add(quality);quality(pipeline.profile);
  return {root,meshes,materials,update(dt){dust.rotation.y+=dt*.006;pipeline.render(dt);},dispose(){pipeline.visualClients.delete(quality);root.removeFromParent();for(const m of meshes)m.geometry.dispose();for(const m of Object.values(materials))m.dispose();textures.forEach(t=>t.dispose());particles.dispose();dust.material.dispose();}};
