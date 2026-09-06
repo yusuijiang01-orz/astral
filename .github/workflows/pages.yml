@@ -4,8 +4,12 @@ on:
   push:
     branches:
       - main
-      - v2-a-visual-foundation
   workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Validate
+    types:
+      - completed
 
 permissions:
   contents: read
@@ -18,6 +22,10 @@ concurrency:
 
 jobs:
   build:
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'v2-a-visual-foundation')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
@@ -67,6 +75,10 @@ jobs:
           mkdir -p pages-dist/v2
           cp -a main-src/dist/. pages-dist/
           cp -a v2-src/dist/. pages-dist/v2/
+          test -f pages-dist/index.html
+          test -f pages-dist/v2/index.html
+          echo 'Pages artifact entry points:'
+          find pages-dist -maxdepth 2 -name 'index.html' -print
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
