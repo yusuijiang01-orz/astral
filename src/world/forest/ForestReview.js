@@ -6,7 +6,7 @@ export async function createForestReview(pipeline){
  const panel=document.createElement('div');panel.className='forest-review';
  const heading=document.createElement('h1');heading.textContent='ASTRAL FOREST RUINS';
  const sub=document.createElement('p');sub.textContent='V2-B · 环境制作中 / ART REVIEW PENDING';panel.append(heading,sub);
- const views=[[20,15,29],[0,7,19],[-23,11,10]];
+ const views=[[20,15,29],[0,7,19],[-12,6,12]];
  const view=i=>{pipeline.camera.position.set(...views[i]);controls.target.set(0,i===1?3:2,-4);controls.update();pipeline.render(0);};
  ['庭院全景','星门近景','侧翼林地'].forEach((label,i)=>{const b=document.createElement('button');b.textContent=label;b.onclick=()=>view(i);panel.append(b);});
  const qa=document.createElement('a');qa.href='?qa=1';qa.textContent='Renderer QA';panel.append(qa);document.body.append(panel);
