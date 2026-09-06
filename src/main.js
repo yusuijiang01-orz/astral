@@ -77,6 +77,12 @@ async function boot() {
   try {
     pipeline = new RendererPipeline(canvas);
     assets = new AssetLoader(pipeline.renderer);
+    if (!debugAssetsEnabled(location.search) && new URLSearchParams(location.search).get('qa') !== '1') {
+      document.querySelector('#hud').hidden=true; document.querySelector('#overlay').classList.remove('active');
+      const {createForestReview}=await import('./world/forest/ForestReview.js');
+      const review=await createForestReview(pipeline);instances.push(review);
+      let last=performance.now();const frame=now=>{if(disposed)return;review.update(Math.min(.05,(now-last)/1000));last=now;frameId=requestAnimationFrame(frame);};frameId=requestAnimationFrame(frame);return;
+    }
     if (!debugAssetsEnabled(location.search)) {
       document.querySelector('#hud').hidden = true;
       document.querySelector('#overlay').classList.remove('active');

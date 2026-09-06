@@ -2,7 +2,7 @@
 
 > V2-A.1：QA/Production 资产分级与软件 WebGL 验收。当前分支 `v2-a-visual-foundation`，Draft PR #1，未合并 main。新门禁见 [V2_GATES.md](docs/V2_GATES.md)。
 
-默认入口为明确标记的 QA 渲染检查场景；`?qa=1` 同样进入检查，`?debugAssets=1` 才进入旧游戏原型。QA GLB 和纹理为原创 CC0 测试夹具，不能作为正式美术结果。
+默认入口为 V2-B 森林遗迹环境查看场景（正式环境制作中，非完整游戏）；`?qa=1` 进入明确标记的 QA 渲染检查，`?debugAssets=1` 才进入旧游戏原型。QA GLB 和纹理为原创 CC0 测试夹具，不能作为正式美术结果。
 
 **状态：开发检查点，不是完成验收的正式成品。**
 

@@ -1,0 +1,7 @@
+PRODUCTION_ASSET / IN_PROGRESS — original Astral Forest Ruins authoring.
+Geometry source: src/world/forest/geometry.js and AstralForestRuins.js.
+PBR texture source: scripts/generate-forest-textures.py.
+Original mathematical surfaces and texture synthesis; no third-party assets.
+CC0-1.0 public-domain dedication. No final art acceptance claimed.
+Current pass: terrain, courtyard, arches, masonry, rooted trees, leaves,
+undergrowth, boulders, crystals, distant ridges. Character assets not included.

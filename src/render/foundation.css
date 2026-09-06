@@ -53,3 +53,7 @@
     font-size: 21px;
   }
 }
+.forest-review{position:fixed;left:32px;top:24px;color:#f2f4df;text-shadow:0 2px 12px #1b382e;font-family:Georgia,serif;pointer-events:none}
+.forest-review h1{font-size:clamp(18px,3vw,30px);letter-spacing:.2em;margin:0 0 8px}
+.forest-review p{font:11px monospace;letter-spacing:.12em}
+.forest-review button,.forest-review a{pointer-events:auto;display:inline-block;background:#193e32b8;color:#e4e7cc;border:1px solid #b2c39d66;border-radius:2px;padding:9px 12px;margin:8px 6px 0 0;font-size:11px;text-decoration:none}

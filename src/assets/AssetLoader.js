@@ -142,6 +142,7 @@ export class AssetLoader {
     if (record.status !== "READY")
       throw new Error("Cannot instantiate blocked asset");
     const root = clone(record.gltf.scene);
+    root.userData.assetClass = record.contract.assetClass || "PRODUCTION_ASSET";
     const owned = [];
     root.traverse((o) => {
       if (!o.isMesh) return;

@@ -1,4 +1,4 @@
-/** Formal assets must carry explicit provenance. Null paths are deliberate blockers. */
+/** Production assets require provenance; null entries are a V2-C asset backlog. */
 export const PLAYER_CLIPS = [
   "Idle",
   "Run",
@@ -53,4 +53,11 @@ for (const contract of Object.values(ASSET_MANIFEST)) contract.assetClass = PROD
 export const QA_MANIFEST = {
   skinnedFixture: { path: 'assets/qa/skinned-fixture.glb', license: 'CC0-1.0; original Astral QA fixture', assetClass: QA_ASSET, kind: 'character', skinned: true, requiredClips: ['Idle'], requiredMaps: ['map', 'normalMap', 'roughnessMap', 'aoMap'] },
   pbrFixture: { path: 'assets/qa/skinned-fixture.glb', license: 'CC0-1.0; original Astral QA fixture', assetClass: QA_ASSET, kind: 'environment', requiredMaps: ['map', 'normalMap', 'roughnessMap', 'aoMap'] },
+};
+
+export const PRODUCTION_ENVIRONMENT_SOURCE = {
+  assetClass: PRODUCTION_ASSET, status: 'IN_PROGRESS', finalArtAccepted: false,
+  source: 'src/world/forest/AstralForestRuins.js', textures: 'assets/forest/',
+  license: 'CC0-1.0; original Astral authored surfaces and maps',
+  glbExport: 'TODO',
 };
