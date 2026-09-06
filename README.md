@@ -1,9 +1,8 @@
-> 当前门禁以 [V2 阶段门禁修订](docs/V2_GATES.md) 为准。下方历史 V2-A 阻塞描述已被修订替代。软件 WebGL 验收工作流运行中；正式角色是 V2-C 资产待办，不能阻止 V2-B。
-
 # 星隙行者 / Astral Rift
 
-> **本分支：V2-A Visual Foundation 草稿 / NOT COMPLETE。** 按新的 V2 需求在现有项目上受控重构。默认显示正式资产门禁，旧游戏仅在 `?debugAssets=1` 下显示且标记 ASSET FALLBACK。当前缺少正式角色/环境资产，受测浏览器无法创建 WebGL，尚未通过视觉验收。详见 [V2-A QA](docs/V2_A_QA.md)；后续阶段未开始。
+> V2-A.1：QA/Production 资产分级与软件 WebGL 验收。当前分支 `v2-a-visual-foundation`，Draft PR #1，未合并 main。新门禁见 [V2_GATES.md](docs/V2_GATES.md)。
 
+默认入口为明确标记的 QA 渲染检查场景；`?qa=1` 同样进入检查，`?debugAssets=1` 才进入旧游戏原型。QA GLB 和纹理为原创 CC0 测试夹具，不能作为正式美术结果。
 
 **状态：开发检查点，不是完成验收的正式成品。**
 
@@ -26,7 +25,7 @@ npm run dev
 python3 -m http.server 8080 --directory dist
 ```
 
-## 当前实现
+## 旧原型功能（仅 debugAssets 模式）
 
 - 3D 程序场景、透视跟随摄像机、有限 Yaw/Pitch、动态阴影、实例化草、固定容量粒子。
 - 主菜单、双角色起始属性选择、横屏提示、摇杆、技能半环布局、键鼠和 Pointer Events 输入。
@@ -60,9 +59,11 @@ npm test
 npm run build
 ```
 
-目前 18 项 Node / JSDOM 测试通过，生产构建成功。JSDOM 测试不执行真实 WebGL、不验证真实多点触控、画面或音频输出。
+目前 32 项 Node / JSDOM 测试通过，生产构建成功。JSDOM 测试不执行真实 WebGL、不验证真实多点触控、画面或音频输出。
 
-浏览器预览服务报告运行，但受测浏览器拒绝访问（`ERR_BLOCKED_BY_CLIENT`），未完成视觉与浏览器端到端验收。没有中端手机 FPS、热量或长时间 GPU 内存稳定性的实测数据。
+图形验收由 `Software WebGL Renderer QA` Actions 执行，运行 Chromium/Playwright + SwiftShader，上传 Bloom 开/关截图、Lighting 对照和 report.json。云端 Disabled GPU 是 ENVIRONMENT_LIMITATION，不是项目门禁失败。真机 GPU、多点触控、FPS、发热均为 REAL_DEVICE_NOT_VERIFIED。
+
+本地具备 Chromium 环境时，可启动开发服务后执行 `npm run test:renderer`。软件光栅化结果不等于真机性能。
 
 ## 源码仓库
 

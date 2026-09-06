@@ -16,7 +16,7 @@ try {
  const end=await page.evaluate(()=>window.__ASTRAL_QA__.step(.75));assert.notDeepEqual(start,end,'AnimationMixer must move a bone');
  await page.evaluate(()=>window.__ASTRAL_QA__.bloom(true));await page.screenshot({path:`${out}/selective-bloom-on.png`});
  results.stats=await page.evaluate(()=>window.__ASTRAL_QA__.stats());
- assert.match(results.stats.renderer,/SwiftShader/i);assert.equal(results.stats.glError,0);assert(results.stats.bones>=2);assert(results.stats.programs.length>5);assert(results.stats.programs.every(p=>p.runnable));assert(results.stats.triangles>0);
+ assert.match(results.stats.renderer,/SwiftShader/i);assert.equal(results.stats.glError,0);assert(results.stats.bones>=2);assert(results.stats.programs.some(p=>p.name==='AstralAnime:cloth'));assert(results.stats.programs.some(p=>p.name==='AstralEnvironmentPBR'));assert(results.stats.programs.length>5);assert(results.stats.programs.every(p=>p.runnable));assert(results.stats.triangles>0);
  await page.evaluate(()=>window.__ASTRAL_QA__.bloom(false));await page.screenshot({path:`${out}/selective-bloom-off.png`});
  const on=PNG.sync.read(await readFile(`${out}/selective-bloom-on.png`)),off=PNG.sync.read(await readFile(`${out}/selective-bloom-off.png`));
  results.bloom=results.stats.markerPixels.map(p=>delta(on,off,p));

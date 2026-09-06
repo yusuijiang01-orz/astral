@@ -7,7 +7,7 @@ import { Interface } from "./ui/interface.js";
 import { AudioManager } from "./audio/sound.js";
 import { RendererPipeline } from "./render/RendererPipeline.js";
 import { AssetLoader } from "./assets/AssetLoader.js";
-import { ASSET_MANIFEST, debugAssetsEnabled } from "./assets/manifest.js";
+import { debugAssetsEnabled } from "./assets/manifest.js";
 
 const canvas = document.querySelector("#world");
 let pipeline,
@@ -16,64 +16,13 @@ let pipeline,
   frameId,
   disposed = false;
 const instances = [];
-function assetStatus(report, debug) {
-  const badge = document.createElement("div");
-  badge.id = "asset-status";
-  badge.setAttribute("role", "status");
-  badge.textContent = report.records.some((r) => r.status === "ENVIRONMENT_LIMITATION")
-    ? "ENVIRONMENT_LIMITATION · CHECK ACTIONS RENDERER QA"
-    : debug
-      ? "ASSET FALLBACK · PROTOTYPE · V2-A NOT COMPLETE"
-      : report.ready
-        ? "V2-A · ASSET REVIEW · NOT COMPLETE"
-        : "V2-A · BLOCKED_BY_ASSET · NOT COMPLETE";
-  document.body.append(badge);
-}
-function foundationPanel(report) {
-  document.querySelector("#hud").hidden = true;
-  const overlay = document.querySelector("#overlay");
-  overlay.classList.add("active");
-  overlay.replaceChildren();
-  const panel = document.createElement("section");
-  panel.className = "panel foundation-panel";
-  const runtimeBlocked = report.records.some(
-    (r) => r.status === "ENVIRONMENT_LIMITATION",
-  );
-  const title = document.createElement("h2");
-  title.textContent = runtimeBlocked
-    ? "V2-A 图形环境不可用"
-    : report.ready
-      ? "V2-A 资产与渲染检查"
-      : "V2-A 正式资产待接入";
-  const text = document.createElement("p");
-  text.textContent = runtimeBlocked
-    ? "当前浏览器无法创建 WebGL 2 上下文。请在支持并启用硬件加速的浏览器检查游戏。此为执行环境限制，不阻止工程阶段；图形门禁以 GitHub Actions SwiftShader 验收为准。"
-    : report.ready
-      ? "资产已通过结构检查。当前仅为视觉基础检查，尚未开放 V2 正式游戏，也未通过视觉验收。"
-      : "正式角色、骨骼动画与环境材质尚未提供。按 V2 要求，默认模式不展示方块角色或圆锥树。";
-  const list = document.createElement("ul");
-  for (const r of report.records) {
-    const li = document.createElement("li");
-    li.textContent = `${r.key} · ${r.status}${r.reason ? " · " + r.reason : ""}`;
-    list.append(li);
-  }
-  const debugLink = document.createElement("a");
-  debugLink.className = "foundation-debug";
-  debugLink.textContent = "进入调试原型（非正式 V2 画面）";
-  const url = new URL(location.href);
-  url.searchParams.set("debugAssets", "1");
-  debugLink.href = url.href;
-  panel.append(title, text, list, debugLink);
-  if (report.ready) {
-    const review = document.createElement("button");
-    review.textContent = "检查已加载资产";
-    review.onclick = () => {
-      overlay.classList.remove("active");
-      overlay.replaceChildren();
-    };
-    panel.append(review);
-  }
-  overlay.append(panel);
+function showFailure(error) {
+  document.querySelector('#hud').hidden = true;
+  const overlay=document.querySelector('#overlay'); overlay.classList.add('active'); overlay.replaceChildren();
+  const panel=document.createElement('section'); panel.className='panel foundation-panel';
+  const title=document.createElement('h2'); title.textContent=pipeline ? 'Runtime error' : 'ENVIRONMENT_LIMITATION';
+  const text=document.createElement('p'); text.textContent=pipeline ? error.message : '当前执行环境无法创建 WebGL。此限制不阻止开发；渲染验收以 Actions SwiftShader 实测为准。';
+  panel.append(title,text);overlay.append(panel);
 }
 function cleanup() {
   if (disposed) return;
@@ -128,7 +77,7 @@ async function boot() {
   try {
     pipeline = new RendererPipeline(canvas);
     assets = new AssetLoader(pipeline.renderer);
-    if (new URLSearchParams(location.search).get('qa') === '1') {
+    if (!debugAssetsEnabled(location.search)) {
       document.querySelector('#hud').hidden = true;
       document.querySelector('#overlay').classList.remove('active');
       const badge = document.createElement('div'); badge.id='asset-status';
@@ -138,33 +87,7 @@ async function boot() {
       let last=performance.now(); const frame=now=>{if(disposed)return;qa.update(Math.min(.05,(now-last)/1000));last=now;frameId=requestAnimationFrame(frame);};
       frameId=requestAnimationFrame(frame); return;
     }
-    const report = await assets.loadManifest(ASSET_MANIFEST);
-    if (disposed) return;
-    const debug = debugAssetsEnabled(location.search);
-    assetStatus(report, debug);
-    if (!debug) {
-      if (report.ready) {
-        for (const record of report.records) {
-          const item = assets.instantiate(record, pipeline);
-          instances.push(item);
-          pipeline.scene.add(item.root);
-          const idle = item.clips.get("Idle");
-          if (idle) item.mixer.clipAction(idle).play();
-        }
-      }
-      foundationPanel(report);
-      let last = performance.now();
-      const frame = (now) => {
-        if (disposed) return;
-        const dt = Math.min(0.1, (now - last) / 1000);
-        last = now;
-        for (const item of instances) item.mixer.update(dt);
-        pipeline.render(dt);
-        frameId = requestAnimationFrame(frame);
-      };
-      frameId = requestAnimationFrame(frame);
-      return;
-    }
+    const badge=document.createElement('div'); badge.id='asset-status'; badge.textContent='PROTOTYPE · DEBUG ONLY · NOT PRODUCTION ART'; document.body.append(badge);
     game = new Game();
     const ui = new Interface(game);
     game.world = new WorldView(canvas, { pipeline, debugAssets: true });
@@ -183,21 +106,7 @@ async function boot() {
   } catch (error) {
     console.error(error);
     cleanup();
-    const report = {
-      ready: false,
-      records: [
-        { key: "renderer", status: "ENVIRONMENT_LIMITATION", reason: error.message },
-        ...Object.entries(ASSET_MANIFEST)
-          .filter(([, c]) => !c.path)
-          .map(([key]) => ({
-            key,
-            status: "BLOCKED_BY_ASSET",
-            reason: "正式资产尚未提供",
-          })),
-      ],
-    };
-    if (!document.querySelector("#asset-status")) assetStatus(report, false);
-    foundationPanel(report);
+    showFailure(error);
   }
 }
 window.addEventListener("beforeunload", () => {

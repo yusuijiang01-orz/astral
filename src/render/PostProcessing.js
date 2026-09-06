@@ -124,6 +124,9 @@ export class PostProcessing {
         gl_FragColor=vec4(c*(1.0-edge*vignette),1.0);
       }`,
     });
+    // ShaderPass clones input uniforms, including Texture objects. Rebind the live
+    // render-target texture or the final pass samples an unrendered clone.
+    this.combine.uniforms.tBloom.value = this.bloom.renderTargetsHorizontal[0].texture;
     this.output = new OutputPass();
     this.fxaa = new ShaderPass(FXAAShader);
     this.composer.addPass(this.renderPass);
