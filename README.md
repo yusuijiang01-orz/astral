@@ -1,5 +1,8 @@
 # 星隙行者 / Astral Rift
 
+> **本分支：V2-A Visual Foundation 草稿 / NOT COMPLETE。** 按新的 V2 需求在现有项目上受控重构。默认显示正式资产门禁，旧游戏仅在 `?debugAssets=1` 下显示且标记 ASSET FALLBACK。当前缺少正式角色/环境资产，受测浏览器无法创建 WebGL，尚未通过视觉验收。详见 [V2-A QA](docs/V2_A_QA.md)；后续阶段未开始。
+
+
 **状态：开发检查点，不是完成验收的正式成品。**
 
 按随附原始需求从零建立的独立 Three.js 移动横屏 Roguelike ARPG 工程。没有修改或依赖用户的其他游戏项目。
