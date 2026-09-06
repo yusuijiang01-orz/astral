@@ -1,0 +1,34 @@
+name: Software WebGL Renderer QA
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  renderer-qa:
+    name: Renderer QA / SwiftShader
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Actual WebGL context, shader compilation and pixel acceptance
+        run: |
+          npx vite preview --host 127.0.0.1 --port 4173 > /tmp/astral-vite.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4173/ > /dev/null && break; sleep 1; done
+          npm run test:renderer
+      - name: Screenshot and renderer evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: software-webgl-${{ github.sha }}
+          path: artifacts/renderer-qa/
+          if-no-files-found: error
+      - name: Renderer QA Failure
+        if: failure()
+        run: echo 'Renderer QA Failure — inspect report and job logs. Real-device verification is independent.' >> "$GITHUB_STEP_SUMMARY"
